@@ -35,14 +35,18 @@ class FavotiteListViewController: UIViewController {
             let movieTitle = movieTitleTextField.text, !movieTitle.isEmpty,
             let movieYear = movieYearTextField.text, !movieYear.isEmpty
         else {
-            print("Text field cannot be empty")
+            let alert = UIAlertController(title: "Text field cannot be empty", message: "", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
             return
         }
         
         let movie = "\(movieTitle) \(movieYear)"
         
         if movieList.contains(movie) {
-            print("The movie is already on the list")
+            let alert = UIAlertController(title: "The movie is already on the list", message: "", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
         } else {
             movieList.append(movie)
             tableView.beginUpdates()
