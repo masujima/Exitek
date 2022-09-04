@@ -18,8 +18,14 @@ class FavotiteListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureTextFields()
         configureAddButton()
         configureTableView()
+    }
+    
+    private func configureTextFields() {
+        movieTitleTextField.delegate = self
+        movieYearTextField.delegate = self
     }
     
     private func configureAddButton() {
@@ -69,6 +75,20 @@ extension FavotiteListViewController: UITableViewDataSource {
         cell.textLabel?.text = movieList[indexPath.row]
         cell.selectionStyle = .none
         return cell
+    }
+}
+
+extension FavotiteListViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        switch textField {
+        case movieTitleTextField:
+            movieYearTextField.becomeFirstResponder()
+        case movieYearTextField:
+            movieYearTextField.resignFirstResponder()
+        default:
+            textField.resignFirstResponder()
+        }
+        return true
     }
 }
 
