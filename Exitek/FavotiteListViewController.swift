@@ -14,6 +14,9 @@ class FavotiteListViewController: UIViewController {
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
     
+    private let defaults = UserDefaults.standard
+    private let key = "MovieList"
+    
     private var movieList = [String]()
     
     override func viewDidLoad() {
@@ -22,6 +25,10 @@ class FavotiteListViewController: UIViewController {
         configureMovieYearTextField()
         configureAddButton()
         configureTableView()
+        
+        if let movieList = defaults.object(forKey: key) as? [String] {
+            self.movieList = movieList
+        }
     }
     
     private func configureMovieTitleTextField() {
@@ -59,10 +66,14 @@ class FavotiteListViewController: UIViewController {
             present(alert, animated: true)
         } else {
             movieList.append(movie)
+            defaults.set(movieList, forKey: key)
             tableView.beginUpdates()
             tableView.insertRows(at: [IndexPath(row: movieList.count-1, section: 0)], with: .automatic)
             tableView.endUpdates()
         }
+        
+        movieTitleTextField.text = ""
+        movieYearTextField.text = ""
         
         movieTitleTextField.resignFirstResponder()
         movieYearTextField.resignFirstResponder()
