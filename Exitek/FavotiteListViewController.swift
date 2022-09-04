@@ -18,13 +18,17 @@ class FavotiteListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureTextFields()
+        configureMovieTitleTextField()
+        configureMovieYearTextField()
         configureAddButton()
         configureTableView()
     }
     
-    private func configureTextFields() {
+    private func configureMovieTitleTextField() {
         movieTitleTextField.delegate = self
+    }
+    
+    private func configureMovieYearTextField() {
         movieYearTextField.delegate = self
     }
     
@@ -79,6 +83,15 @@ extension FavotiteListViewController: UITableViewDataSource {
 }
 
 extension FavotiteListViewController: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if textField == movieYearTextField {
+            let allowedCharacters = CharacterSet.decimalDigits
+            let characterSet = CharacterSet(charactersIn: string)
+            return allowedCharacters.isSuperset(of: characterSet)
+        }
+        return true
+    }
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         switch textField {
         case movieTitleTextField:
