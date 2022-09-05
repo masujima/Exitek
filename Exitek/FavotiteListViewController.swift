@@ -17,7 +17,7 @@ class FavotiteListViewController: UIViewController {
     private let defaults = UserDefaults.standard
     private let key = "MovieList"
     
-    private var movieList = [String]()
+    private var movieList = [Movie]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,8 +26,10 @@ class FavotiteListViewController: UIViewController {
         configureAddButton()
         configureTableView()
         
-        if let movieList = defaults.object(forKey: key) as? [String] {
-            self.movieList = movieList
+        if let savedMovies = defaults.object(forKey: key) as? Data {
+            if let movieList = try? JSONDecoder().decode([Movie].self, from: savedMovies) {
+                self.movieList = movieList
+            }
         }
     }
     
@@ -58,22 +60,26 @@ class FavotiteListViewController: UIViewController {
             return
         }
         
-        let movie = "\(movieTitle) \(movieYear)"
+        let movie = Movie(title: movieTitle, year: movieYear)
         
-        if movieList.contains(movie) {
+        if movieList.contains(where: { $0.title == movie.title && $0.year == movie.year }) {
             let alert = UIAlertController(title: "The movie is already on the list", message: "", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default))
             present(alert, animated: true)
         } else {
             movieList.append(movie)
-            defaults.set(movieList, forKey: key)
+            
+            if let encoded = try? JSONEncoder().encode(movieList) {
+                defaults.set(encoded, forKey: key)
+            }
+            
             tableView.beginUpdates()
             tableView.insertRows(at: [IndexPath(row: movieList.count-1, section: 0)], with: .automatic)
             tableView.endUpdates()
+            
+            movieTitleTextField.text = ""
+            movieYearTextField.text = ""
         }
-        
-        movieTitleTextField.text = ""
-        movieYearTextField.text = ""
         
         movieTitleTextField.resignFirstResponder()
         movieYearTextField.resignFirstResponder()
@@ -87,7 +93,8 @@ extension FavotiteListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .default, reuseIdentifier: "MovieCell")
-        cell.textLabel?.text = movieList[indexPath.row]
+        let movie = movieList[indexPath.row]
+        cell.textLabel?.text = "\(movie.title) \(movie.year)"
         cell.selectionStyle = .none
         return cell
     }
@@ -115,4 +122,3 @@ extension FavotiteListViewController: UITextFieldDelegate {
         return true
     }
 }
-
